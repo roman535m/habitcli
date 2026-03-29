@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 type Habit = {
     id: number;
@@ -10,12 +11,20 @@ type Habit = {
 };
 
 export default function HabitList() {
+    const { token } = useAuth();
     const [habits, setHabits] = useState<Habit[]>([]);
     const [loading, setLoading] = useState(true);
     const [newHabitName, setNewHabitName] = useState("");
 
+    const authHeaders = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+    }
+
     async function fetchHabits() {
-        const rest = await fetch("http://localhost:3001/habits");
+        const rest = await fetch("http://localhost:3001/habits", {
+            headers: authHeaders,
+        });
         const data = await rest.json();
         setHabits(data);
         setLoading(false);
@@ -25,7 +34,7 @@ export default function HabitList() {
         if (!newHabitName.trim()) return;
         await fetch('http://localhost:3001/habits', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: authHeaders,
             body: JSON.stringify({ name: newHabitName }),
         });
         setNewHabitName("");
@@ -35,6 +44,7 @@ export default function HabitList() {
     async function completeHabit(id: number) {
         await fetch(`http://localhost:3001/habits/${id}/complete`, {
             method: 'PATCH',
+            headers: authHeaders,
         });
         fetchHabits();
     }
@@ -42,6 +52,7 @@ export default function HabitList() {
     async function deleteHabit(id: number) {
         await fetch(`http://localhost:3001/habits/${id}`, {
             method: 'DELETE',
+            headers: authHeaders,
         });
         fetchHabits();
     }
@@ -52,7 +63,6 @@ export default function HabitList() {
     }, []);
 
     if (loading) return <p className="text-gray-500">Loading habits...</p>;
-    if (habits.length === 0) return <p className="text-gray-500">No habits yet!</p>;
 
     return (
         <div className="space-y-6">
