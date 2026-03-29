@@ -16,4 +16,13 @@ db.exec(`
     )
 `);
 
+db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        createdAt TEXT DEFAULT (datetime('now'))
+    )
+`);
+
 export default db;
