@@ -1,10 +1,12 @@
 import express from 'express';
+import cors from 'cors';
 import chalk from 'chalk';
 import db from './db.js';
 
 const app = express()
-const PORT = 3000;
+const PORT = 3001;
 
+app.use(cors());
 app.use(express.json());
 
 // GET /habits - list all habits
